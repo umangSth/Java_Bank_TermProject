@@ -7,9 +7,9 @@ public class User {
     private String email;
     private String phone;
     private String address;
-    private String user_type;
+    private UserType user_type;
     
-	public User(int id, String name, String password, String email, String phone, String address, String user_type) {
+	public User(int id, String name, String password, String email, String phone, String address, UserType user_type) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -53,14 +53,24 @@ public class User {
 	public String getAddress() {
 		return address;
 	}
+	public User() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public String getUser_type() {
+	public UserType getUser_type() {
 		return user_type;
 	}
-	public void setUser_type(String user_type) {
+	public void setUser_type(UserType user_type) {
 		this.user_type = user_type;
 	}
+	
+	 public enum UserType {
+	        ADMIN,
+	        CLIENT
+	    }
 
 }
