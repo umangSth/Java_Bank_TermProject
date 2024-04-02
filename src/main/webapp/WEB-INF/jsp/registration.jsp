@@ -23,7 +23,7 @@
             </tr> 
             <tr>
                 <td>Phone:</td>  
-                <td><form:input type="text" path="price" /></td>
+                <td><form:input type="text" path="phone" /></td>
             </tr>
             <tr>
                 <td>Address:</td>  
@@ -47,6 +47,7 @@
                 <td><input type="submit" value="Save" /></td>
             </tr>
         </table>
+         <a href="/TermProject_Bank/">To Register page</a>
     </form:form>
 </body>
 </html>

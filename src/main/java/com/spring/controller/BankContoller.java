@@ -39,7 +39,7 @@ public class BankContoller {
 	            return "redirect:/index"; // Redirect to the home page after successful login
 	        } else {
 	            // User authentication failed, redirect back to the login page with an error message
-	            return "redirect:/login?error";
+	            return "redirect:/?error";
 	        }
 	    }
 	 
@@ -53,9 +53,37 @@ public class BankContoller {
 	 
 	 @RequestMapping(value="/saveUser", method = RequestMethod.POST)
 	 public String saveUser(@ModelAttribute("User") User user) {
-		 user_dao.save(user);
-		 return "redirect:/"; // will redirect to login	
+	
+
+		    // Check if the email is already registered
+		 System.out.println((!isEmailUnique(user.getEmail())));
+		 System.out.println(user.getEmail());
+		    if (!isEmailUnique(user.getEmail())) {
+		        return "redirect:/registration?error=not_unique_email";
+		    }
+		    // If email is unique, proceed with user registration
+		    user_dao.save(user);
+		    return "redirect:/"; // Redirect to login page after successful registration
 		 }
+	 
+	 
+	 @RequestMapping("/index")
+	 public String index(Model m, HttpServletRequest request) {
+	     HttpSession session = request.getSession(false);
+	     if (session != null && session.getAttribute("email") != null) {
+	         return "index";
+	     } else {
+	         return "redirect:/";
+	     }
+	 }
+	 
+	 
+	 private boolean isEmailUnique(String email) {
+		    // Query the database to check if the email is unique
+		   
+		    return user_dao.isEmailUnique(email);
+		}
+	 
 	
 	
 }
