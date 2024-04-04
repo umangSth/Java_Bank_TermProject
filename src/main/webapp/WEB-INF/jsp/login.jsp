@@ -27,7 +27,7 @@
             </tr>
         </table>
         
-        <a href="/TermProject_Bank//registration">To login page</a>
+        <a href="/TermProject_Bank/registration">To login page</a>
     </form:form>
     
     

@@ -19,13 +19,14 @@ public class AccountDao {
 	} 
 	
 	public int saveAccount(Account a) {
-		String AccountType = mapAccTypeToString(a.getAccountType());
-		String sql = "insert into account(owner_id, balance, accountType) value(?,?,?)";
-		return template.update(sql, a.getAccount_id(), a.getBalance(), AccountType);
+	    String accountType = mapAccTypeToString(a.getAccountType());
+	    String sql = "INSERT INTO account (owner_id, balance, account_type) VALUES (?, ?, ?)";
+	    System.out.println("here    - - - >   "+ a.getOwner_id() );
+	    return template.update(sql, a.getOwner_id(), a.getBalance(), accountType);
 	}
 	
 	
-	private String mapAccTypeToString(AccountType at) {
+	public String mapAccTypeToString(AccountType at) {
 		if(at == AccountType.CHECKING) {
 			return "CHECKING";
 		} else if(at == AccountType.SAVINGS) {
@@ -76,7 +77,43 @@ public class AccountDao {
 	    return "Withdrawal successful";
 	}
 
-	private BigDecimal retrieveBalance(int owner_id, String accountType) {
+	public String depositBalance(int owner_id, String accountType, BigDecimal balance) {
+	    try {
+	        BigDecimal currentBalance = retrieveBalance(owner_id, accountType);
+	        if (currentBalance == null) {
+	            return "Account not found for owner " + owner_id + " and account type " + accountType;
+	        }
+
+	        BigDecimal newBalance = currentBalance.add(balance);
+	        updateBalance(owner_id, accountType, newBalance);
+
+	        // Check if the balance was updated successfully
+	        BigDecimal updatedBalance = retrieveBalance(owner_id, accountType);
+	        if (updatedBalance != null && updatedBalance.equals(newBalance)) {
+	            return "Deposit successful";
+	        } else {
+	            return "Failed to update balance";
+	        }
+	    } catch (Exception e) {
+	        // Log the exception for debugging purposes
+	        e.printStackTrace();
+	        return "An error occurred during deposit: " + e.getMessage();
+	    }
+	}
+	
+	public Map<String, Object> getOwnerIdAndType(int accountId) {
+        String sql = "SELECT owner_id, accountType FROM account WHERE account_id = ?";
+        try {
+            // Execute the query and retrieve the owner ID and account type
+            return template.queryForMap(sql, accountId);
+        } catch (EmptyResultDataAccessException e) {
+            // Handle the case where no account with the specified ID is found
+            return null; // Return null or throw an exception based on your application's logic
+        }
+    }
+
+
+	public BigDecimal retrieveBalance(int owner_id, String accountType) {
 	    String sql = "SELECT balance FROM account WHERE owner_id=? AND account_type=?";
 	    try {
 	        return template.queryForObject(sql, BigDecimal.class, owner_id, accountType);
@@ -85,13 +122,13 @@ public class AccountDao {
 	    }
 	}
 
-	private void updateBalance(int owner_id, String accountType, BigDecimal newBalance) {
+	public void updateBalance(int owner_id, String accountType, BigDecimal newBalance) {
 	    String sql = "UPDATE account SET balance=? WHERE owner_id=? AND account_type=?";
 	    template.update(sql, newBalance, owner_id, accountType);
 	}
 
-	private boolean checkIfAccount(int owner_id, String accountType) {
-	    if (accountType.isEmpty()) {
+	public boolean checkAccountHasType(int owner_id, String accountType) {
+	    if (accountType == null) {
 	        String sql = "SELECT COUNT(DISTINCT account_type) FROM account WHERE owner_id=?";
 	        int accNo = template.queryForObject(sql, Integer.class, owner_id);
 	        return accNo > 0;
@@ -105,7 +142,4 @@ public class AccountDao {
 	        }
 	    }
 	}
-
-	
-	
 }

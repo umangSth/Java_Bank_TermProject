@@ -4,8 +4,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+
 import com.spring.beans.User;
 import com.spring.beans.User.UserType;
+
 
 public class UserDao {
 	JdbcTemplate template;
