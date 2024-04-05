@@ -128,6 +128,7 @@ public class AccountDao {
 	}
 
 	public boolean checkAccountHasType(int owner_id, String accountType) {
+		
 	    if (accountType == null) {
 	        String sql = "SELECT COUNT(DISTINCT account_type) FROM account WHERE owner_id=?";
 	        int accNo = template.queryForObject(sql, Integer.class, owner_id);

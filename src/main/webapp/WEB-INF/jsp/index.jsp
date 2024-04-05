@@ -68,7 +68,7 @@
 			    <tr>
 			        <td>${entry.key}</td> <!-- Access the key (account type) -->
 			        <td>${entry.value}</td> <!-- Access the value (balance) -->
-			        <td><a href="/transactions/accountType=${entry.key}">Transactions</a>
+			        <td><a href="/TermProject_Bank/transactions/accountType=${entry.key}">Transactions</a>
 			    </tr>
 			</c:forEach>
         </table>
@@ -80,12 +80,12 @@
                 <a href="/TermProject_Bank/registerAccount">Open Accounts</a>
             </div>
             <div class="option">
-                
+                <a href="/TermProject_Bank/internalTransfer">Internal Fund Transfers</a>
             </div>
          
         </div>
         <div class="footer">
-            <p>Need help? Contact support.</p>
+            <p>Need help? Contact support.</p>				
         </div>
     </div>
 </body>

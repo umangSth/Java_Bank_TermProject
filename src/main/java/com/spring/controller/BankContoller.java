@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.spring.beans.Account;
+import com.spring.beans.InternalFundTransfer;
 import com.spring.beans.Transaction;
 import com.spring.beans.User;
 import com.spring.dao.AccountDao;
@@ -184,8 +185,9 @@ public class BankContoller {
 	 @RequestMapping("/transactions/{accountType}")
 	 public String transactions(@PathVariable String accountType, Model model, HttpServletRequest request) {
 	     HttpSession session = request.getSession(false);
-	     if (session != null && session.getAttribute("id") != null) {
+	     if (session != null && session.getAttribute("user_id") != null) {
 	         Integer user_id = (Integer) session.getAttribute("user_id");
+	         
 	         List<Transaction> transactions = transaction_dao.getTransactions(user_id, accountType);
 	         if (transactions.isEmpty()) {
 	             return "redirect:/index/" + user_id;
@@ -195,9 +197,59 @@ public class BankContoller {
 	         }
 	     } else {
 	         // Redirect to the index page if the user is not logged in
-	         return "redirect:/index";
+	         return "redirect:/";
 	     }
 	 }
+	 
+	 @RequestMapping("/internalTransfer")
+		public String showInternalTransfer(Model m) {
+			m.addAttribute("command", new InternalFundTransfer()); // addAttributes() method add values in the Model that'll be identified globally.
+			return "internalTransfer";
+		}
+
+	 @RequestMapping(value="/internalTransferAction", method = RequestMethod.POST)
+	 public String registerAccountAction(@ModelAttribute("internalFundTransfer") InternalFundTransfer internalFund, RedirectAttributes redirectAttributes,  HttpServletRequest request) {
+	     try {
+	    	 HttpSession session = request.getSession(false);
+		     if (session != null && session.getAttribute("user_id") != null) {
+		    	 int owner_id = (int) session.getAttribute("user_id");
+		    	
+		    	 String fromAcc = account_dao.mapAccTypeToString(internalFund.getFromAccType());
+		    	 String toAcc = account_dao.mapAccTypeToString(internalFund.getToAccType());
+		    	 
+		         // Check if the account of the same type already exists for the owner
+		         boolean fromAccountExists = account_dao.checkAccountHasType(owner_id, fromAcc);
+		         boolean toAccountExists = account_dao.checkAccountHasType(owner_id, toAcc);
+		        
+		         if (!fromAccountExists && !toAccountExists) {
+		          
+		             return "redirect:/index/"+owner_id+"?error=no_account_of_given_type_founds"; // Redirect back to the index
+		         }
+		         
+		         
+		         // Perform validation (e.g., check for null values, validate account type, validate balance)
+		         // Save the account details
+		         int flag = transaction_dao.internalTransfer(owner_id, fromAcc, toAcc, internalFund.getAmount());
+		         if(flag == 0) {
+		        	 return "redirect:/index/"+owner_id+"?message=insufficent_fund";
+		         }
+		         return "redirect:/index/"+owner_id; // Redirect to the home page after successful registration
+		    	 
+		     }else {
+		    	  // Redirect to the index page if the user is not logged in
+		         return "redirect:/?error=no_session";
+		     }
+	    	
+	     } catch (Exception e) {
+	         // Log the exception for debugging purposes
+	         e.printStackTrace();
+	         // Add error message to be displayed on the registration page
+	         redirectAttributes.addFlashAttribute("error", "An error occurred while registering the account. Please try again.");
+	         return "redirect:/"; // Redirect back to the registration form
+	     }
+	 }
+
+	 
 
 	 
 	 // -------> Transaction controller ends

@@ -1,5 +1,6 @@
 package com.spring.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -66,13 +67,43 @@ public class TransactionDao {
 	        return 0; // Failed transaction
 	    }
 	}
+	
+	
+	public int internalTransfer(int ownerId, String fromAccType, String toAccType, BigDecimal amount) {
+	    // Define SQL queries to update the balances of the source and destination accounts
+	    String updateFromAccSql = "UPDATE account SET balance = balance - ? WHERE owner_id = ? AND account_type = ? AND balance >= ?";
+	    String updateToAccSql = "UPDATE account SET balance = balance + ? WHERE owner_id = ? AND account_type = ?";
+
+	    try {
+	        // Deduct the amount from the source account only if the balance is sufficient
+	        int rowsUpdated = template.update(updateFromAccSql, amount, ownerId, fromAccType, amount);
+	        if (rowsUpdated == 0) {
+	            // Insufficient balance, rollback the transaction and return -1
+	            return 0;
+	        }
+
+	        // Add the amount to the destination account
+	        template.update(updateToAccSql, amount, ownerId, toAccType);
+
+	        // Return 1 to indicate a successful internal transfer
+	        return 1;
+	    } catch (Exception e) {
+	        // Log any exceptions or errors
+	        e.printStackTrace();
+	        // Return -1 to indicate failure
+	        return -1;
+	    }
+	}
 
 
-	 public List<Transaction> getTransactions(int accountId, String accountType) {
-	        String sql = "SELECT * FROM transaction WHERE account_id = ? and account_type = ?";
-	        return template.query(sql, new TransactionMapper(), accountId,accountType);
-	  }
-	 
+
+	public List<Transaction> getTransactions(int accountId, String accountType) {
+	    String sql = "SELECT * FROM transaction WHERE (toAccount = ? OR fromAccount = ?) AND account_type = ?";
+	    return template.query(sql, new TransactionMapper(), accountId, accountId, accountType);
+	}
+	
+	
+	
 	 private String mapTransactionType(TransactionType tt) {
 		 if(tt == TransactionType.WITHDRAW) {
 			return "WITHDRAW"; 

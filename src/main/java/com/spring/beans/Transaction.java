@@ -3,6 +3,9 @@ package com.spring.beans;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.spring.beans.Account.AccountType;
+
+
 
 public class Transaction {
 	private int transactionId;
@@ -12,10 +15,33 @@ public class Transaction {
     private BigDecimal amount;
     private LocalDateTime transactionDate;
     private TransactionStatus transactionStatus; // Enum representing pending, completed, or failed
+	private AccountType accountType;
     
     
     
- public int getTransactionId() {
+ public Transaction(int transactionId, TransactionType transactionType, int toAccount, int fromAccount,
+			BigDecimal amount, LocalDateTime transactionDate, TransactionStatus transactionStatus,
+			AccountType accountType) {
+		super();
+		this.transactionId = transactionId;
+		this.transactionType = transactionType;
+		this.toAccount = toAccount;
+		this.fromAccount = fromAccount;
+		this.amount = amount;
+		this.transactionDate = transactionDate;
+		this.transactionStatus = transactionStatus;
+		this.accountType = accountType;
+	}
+
+public AccountType getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(AccountType accountType) {
+		this.accountType = accountType;
+	}
+
+public int getTransactionId() {
 		return transactionId;
 	}
 
@@ -77,17 +103,6 @@ public class Transaction {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Transaction(int transactionId, TransactionType transactionType, int toAccount, int fromAccount,
-			BigDecimal amount, LocalDateTime transactionDate, TransactionStatus transactionStatus) {
-		super();
-		this.transactionId = transactionId;
-		this.transactionType = transactionType;
-		this.toAccount = toAccount;
-		this.fromAccount = fromAccount;
-		this.amount = amount;
-		this.transactionDate = transactionDate;
-		this.transactionStatus = transactionStatus;
-	}
 
 
 	// TransactionType enum definition
@@ -104,4 +119,5 @@ public class Transaction {
         COMPLETED,
         FAILED
     }
+ 
 }
