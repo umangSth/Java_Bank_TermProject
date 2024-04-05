@@ -1,6 +1,7 @@
 package com.spring.controller;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.spring.beans.Account;
+import com.spring.beans.Transaction;
 import com.spring.beans.User;
 import com.spring.dao.AccountDao;
+import com.spring.dao.TransactionDao;
 import com.spring.dao.UserDao;
 @Service
 @Transactional
@@ -31,6 +34,8 @@ public class BankContoller {
 	UserDao user_dao;
 	@Autowired
 	AccountDao account_dao;
+	@Autowired
+	TransactionDao transaction_dao;
 	
 	// user view controller section
 	//  ========> start
@@ -102,15 +107,29 @@ public class BankContoller {
 	 
 	 
 	 @RequestMapping(value="/registerAccount")
-	 public String showAccountForm(@RequestParam("owner_id") int owner_id, Model m) {
+	 public String showAccountForm(@RequestParam(value = "owner_id", required = false) Integer owner_id, HttpSession session, Model m) {
+	     if (owner_id == null) {
+	         // Check if user_id is present in the session
+	         Integer user_id = (Integer) session.getAttribute("user_id");
+	         if (user_id != null) {
+	             // Use user_id from session attribute as owner_id
+	             m.addAttribute("owner_id", user_id);
+	         } else {
+	             
+	             return "redirect:/error"; // Redirect to error page
+	         }
+	     } else {
+	         // Use owner_id provided as request parameter
+	         m.addAttribute("owner_id", owner_id);
+	     }
+	     
 	     m.addAttribute("account", new Account());
-	     m.addAttribute("owner_id", owner_id); // Add the user ID to the model
 	     return "registerAccount";
 	 }
-	 
+
 
 	 @RequestMapping(value="/registerAccountAction", method = RequestMethod.POST)
-	 public String registerAccountAction(@ModelAttribute("account") Account account, RedirectAttributes redirectAttributes) {
+	 public String registerAccountAction(@ModelAttribute("account") Account account, HttpSession session, RedirectAttributes redirectAttributes) {
 	     try {
 	    	 String accType = account_dao.mapAccTypeToString(account.getAccountType());
 	         // Check if the account of the same type already exists for the owner
@@ -118,13 +137,19 @@ public class BankContoller {
 	         if (accountExists) {
 	             // Add error message to be displayed on the registration page
 	             redirectAttributes.addFlashAttribute("error", "An account of the same type already exists.");
-	             return "redirect:/registerAccount"; // Redirect back to the registration form
+	             return "redirect:/registerAccount?error=An_account_of_the_same_type_already_exists."; // Redirect back to the registration form
 	         }
 
 	         // Perform validation (e.g., check for null values, validate account type, validate balance)
 	         // Save the account details
 	         account_dao.saveAccount(account);
-	         return "redirect:/?Account=success"; // Redirect to the home page after successful registration
+	         Integer user_id = (Integer) session.getAttribute("user_id");
+	         if (user_id != null) {
+	        	 return "redirect:/index/"+(user_id); 
+	         }else {
+		         return "redirect:/?Account=success"; // Redirect to the home page after successful registration	        	 
+	         }
+
 	     } catch (Exception e) {
 	         // Log the exception for debugging purposes
 	         e.printStackTrace();
@@ -152,6 +177,29 @@ public class BankContoller {
 	     }
 	 }
 
+	 // ------> Accounts controller ends
+	 
+	 // -------> Transaction controller starts
+	 
+	 @RequestMapping("/transactions/{accountType}")
+	 public String transactions(@PathVariable String accountType, Model model, HttpServletRequest request) {
+	     HttpSession session = request.getSession(false);
+	     if (session != null && session.getAttribute("id") != null) {
+	         Integer user_id = (Integer) session.getAttribute("user_id");
+	         List<Transaction> transactions = transaction_dao.getTransactions(user_id, accountType);
+	         if (transactions.isEmpty()) {
+	             return "redirect:/index/" + user_id;
+	         } else {
+	             model.addAttribute("transactions", transactions);
+	             return "transactions";
+	         }
+	     } else {
+	         // Redirect to the index page if the user is not logged in
+	         return "redirect:/index";
+	     }
+	 }
 
+	 
+	 // -------> Transaction controller ends
 	
 }

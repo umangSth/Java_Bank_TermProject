@@ -62,11 +62,13 @@
             <tr>
                 <th>Account Type</th>
                 <th>Balance</th>
+                <th>Transaction</th>
             </tr>
            <c:forEach var="entry" items="${accounts}">
 			    <tr>
 			        <td>${entry.key}</td> <!-- Access the key (account type) -->
 			        <td>${entry.value}</td> <!-- Access the value (balance) -->
+			        <td><a href="/transactions/accountType=${entry.key}">Transactions</a>
 			    </tr>
 			</c:forEach>
         </table>
@@ -75,10 +77,10 @@
                 <a href="/profile">Profile</a>
             </div>
             <div class="option">
-                <a href="/registerAccount">Open Accounts</a>
+                <a href="/TermProject_Bank/registerAccount">Open Accounts</a>
             </div>
             <div class="option">
-                <a href="/transactions">Transactions</a>
+                
             </div>
          
         </div>

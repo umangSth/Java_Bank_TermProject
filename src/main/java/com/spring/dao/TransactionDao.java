@@ -68,9 +68,9 @@ public class TransactionDao {
 	}
 
 
-	 public List<Transaction> getTransactionsByAccountId(int accountId) {
-	        String sql = "SELECT * FROM transaction WHERE account_id = ?";
-	        return template.query(sql, new TransactionMapper(), accountId);
+	 public List<Transaction> getTransactions(int accountId, String accountType) {
+	        String sql = "SELECT * FROM transaction WHERE account_id = ? and account_type = ?";
+	        return template.query(sql, new TransactionMapper(), accountId,accountType);
 	  }
 	 
 	 private String mapTransactionType(TransactionType tt) {
