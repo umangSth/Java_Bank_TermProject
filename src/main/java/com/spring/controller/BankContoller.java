@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +101,19 @@ public class BankContoller {
 		   
 		    return user_dao.isEmailUnique(email);
 		}
+	 
+	 
+	 @RequestMapping("/logout")
+	 public String logoutAction(HttpServletRequest request, HttpServletResponse response) {
+	        HttpSession session = request.getSession(false);
+	        if (session != null) {
+	            session.invalidate(); // Invalidate the session
+	        }
+	        // Redirect to the login page or any other desired page after logout
+	        return "redirect:/";
+	    }
+	 
+	 
 	// user view controller section
 	//  ========> ends
 	
@@ -268,7 +282,6 @@ public class BankContoller {
 			 HttpSession session = request.getSession(false);
 		     if (session != null && session.getAttribute("user_id") != null) {
 		    	 int owner_id = (int) session.getAttribute("user_id");
-		    	 System.out.println("here      > "+ transaction.getToAccountType());
 		    	// Set transaction date to current date and time
 		         transaction.setTransactionDate(LocalDateTime.now());
 		         if(transaction.getTransactionType().toString() == "WITHDRAW") {
@@ -302,8 +315,76 @@ public class BankContoller {
 	 }
 	   
 	 
+	 @RequestMapping("/e_interac")
+	 public String e_interacView(Model m) {
+		 m.addAttribute("transaction", new Transaction()); // Add a new transaction object
+	     return "e_interac";
+	 }
 	 
+	 @RequestMapping(value="/e_interacAction", method = RequestMethod.POST)
+	 public String e_interacAction(@ModelAttribute("transaction") Transaction transaction, RedirectAttributes redirectAttributes,  HttpServletRequest request) {
+		 HttpSession session = request.getSession(false);
+	     if (session != null && session.getAttribute("user_id") != null) {
+	    	 int owner_id = (int) session.getAttribute("user_id");
+	    	 transaction.setFromAccount(owner_id);
+	    	 transaction.setTransactionDate(LocalDateTime.now());
+	    	 int result = transaction_dao.saveTransaction(transaction);
+	    	 if(result == -1) {
+	    		 return "redirect:/index/"+owner_id+"?error=no_account_type_found";
+	    	 }else if(result == 0) {
+	    		 return "redirect:/index/"+owner_id+"?error=some_error_in_transaction";
+	    	 }else if(result == -2) {
+	    		 return "redirect:/index/"+owner_id+"?error=insufficent_amount";
+	    	 }
+	    	 
+	    	 return "redirect:/index/"+owner_id+"?success=transaction_done"; // Redirect to the home page after successful registration
+	    	
+	     }else {
+	    	 
+	    	 // Redirect to the index page if the user is not logged in
+	         return "redirect:/?error=no_session";
+	     }
+		 	 
+	 }	 
 	 
 	 // -------> Transaction controller ends
-	
+	 
+	 
+	 
+	 // -----------> Utility Section
+	 
+	 @RequestMapping("/utility")
+	 public String utility(Model m) {
+		 m.addAttribute("transaction", new Transaction()); // Add a new transaction object
+	     return "utility";
+	 }
+	 
+	 
+	 @RequestMapping(value="/utilityAction", method = RequestMethod.POST)
+	 public String utilityAction(@ModelAttribute("transaction") Transaction transaction, RedirectAttributes redirectAttributes,  HttpServletRequest request) {
+		 HttpSession session = request.getSession(false);
+	     if (session != null && session.getAttribute("user_id") != null) {
+	    	 int owner_id = (int) session.getAttribute("user_id");
+	    	 transaction.setFromAccount(owner_id);
+	    	 transaction.setTransactionDate(LocalDateTime.now());
+	    	 int result = transaction_dao.saveTransaction(transaction);
+	    	 if(result == -1) {
+	    		 return "redirect:/index/"+owner_id+"?error=no_account_type_found";
+	    	 }else if(result == 0) {
+	    		 return "redirect:/index/"+owner_id+"?error=some_error_in_transaction";
+	    	 }else if(result == -2) {
+	    		 return "redirect:/index/"+owner_id+"?error=insufficent_amount";
+	    	 }
+	    	 
+	    	 return "redirect:/index/"+owner_id+"?success=transaction_done"; // Redirect to the home page after successful registration
+	    	
+	     }else {
+	    	 
+	    	 // Redirect to the index page if the user is not logged in
+	         return "redirect:/?error=no_session";
+	     }
+		 	 
+	 }	 
+	 
+	 
 }

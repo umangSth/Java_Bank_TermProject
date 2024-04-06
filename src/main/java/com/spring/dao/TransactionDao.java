@@ -31,11 +31,22 @@ public class TransactionDao {
 	    try {
 	    	int fromOwnerId = transaction.getFromAccount();
 	        int toOwnerId = transaction.getToAccount();
-	       
+	        BigDecimal amount = transaction.getAmount();
+	        
 	        String transactionType = mapTransactionType(transaction.getTransactionType());
 	        String transactionStatus = mapTransactionStatus(transaction.getTransactionStatus());
 	        String toAccountType = accountDao.mapAccTypeToString(transaction.getFromAccountType());
 	        String fromAccountType = accountDao.mapAccTypeToString(transaction.getToAccountType());
+	        
+	        
+	        // get the current balance of the fromAccount
+	        BigDecimal fromAccountBalance = accountDao.retrieveBalance(fromOwnerId, fromAccountType);
+
+		     // Check if the balance is sufficient for the transaction
+		        if (fromAccountBalance.compareTo(amount) < 0) {
+		            // Insufficient balance
+		            return -2;
+		        }
 	        
 	        boolean tochk = accountDao.checkAccountHasType(toOwnerId, toAccountType);
 	        boolean fromchk = accountDao.checkAccountHasType(fromOwnerId, fromAccountType);
@@ -55,6 +66,9 @@ public class TransactionDao {
 	            case WITHDRAW:
 	            	accountDao.withdrawBalance(fromOwnerId, fromAccountType, transaction.getAmount());
 	                break;
+	            case UTILITY:
+	            	accountDao.withdrawBalance(fromOwnerId, fromAccountType, transaction.getAmount());
+                	break;
 	            case DEPOSIT:
 	                // Check if the 'toAccount' exists
 	                if (toOwnerId != 0 && toAccountType != null) {
@@ -87,7 +101,6 @@ public class TransactionDao {
 	    // Define SQL queries to update the balances of the source and destination accounts
 	    String updateFromAccSql = "UPDATE account SET balance = balance - ? WHERE owner_id = ? AND account_type = ? AND balance >= ?";
 	    String updateToAccSql = "UPDATE account SET balance = balance + ? WHERE owner_id = ? AND account_type = ?";
-	    AccountDao ad = new AccountDao();
 	    try {
 	        // Deduct the amount from the source account only if the balance is sufficient
 	        int rowsUpdated = template.update(updateFromAccSql, amount, ownerId, fromAccType, amount);

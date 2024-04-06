@@ -101,15 +101,27 @@
 			</c:forEach>
         </table>
         <div class="options">
-            <div class="option">
-                <a href="/profile">Profile</a>
-            </div>
+          
             <div class="option">
                 <a href="/TermProject_Bank/registerAccount">Open Accounts</a>
             </div>
             <div class="option">
             	<a href="/TermProject_Bank/internalTransfer/">Internal Transfer</a>
             </div>
+            
+            <div class="option">
+            	<a href="/TermProject_Bank/e_interac/">E-interac</a>
+            </div>
+            
+             <div class="option">
+            	<a href="/TermProject_Bank/utility/">Pay Utility</a>
+            </div>
+            
+            
+            <div class="option">
+            	<a href="/TermProject_Bank/logout/">Logout</a>
+            </div>
+            
             
             <!-- Empty div removed -->
         </div>
