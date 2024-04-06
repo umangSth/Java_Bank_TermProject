@@ -11,14 +11,20 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f0f0f0; /* Light gray background color */
         }
         .container {
             width: 80%;
             margin: 20px auto;
+            background-color: #fff; /* White container background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Drop shadow effect */
         }
         h1 {
             text-align: center;
             margin-bottom: 20px;
+            color: #333; /* Dark text color */
         }
         .welcome-message {
             text-align: center;
@@ -32,7 +38,7 @@
         .balance-table th,
         .balance-table td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px; /* Increased padding */
             text-align: left;
         }
         .balance-table th {
@@ -45,9 +51,22 @@
         .option {
             margin: 0 10px;
         }
+        .option a {
+            text-decoration: none;
+            color: #333; /* Dark text color for links */
+            padding: 10px 20px;
+            border: 1px solid #333; /* Dark border */
+            border-radius: 5px;
+            transition: all 0.3s ease; /* Smooth transition */
+        }
+        .option a:hover {
+            background-color: #333; /* Dark background on hover */
+            color: #fff; /* White text color on hover */
+        }
         .footer {
             text-align: center;
             margin-top: 50px;
+            color: #666; /* Medium gray text color */
         }
     </style>
 </head>
@@ -68,7 +87,7 @@
 			    <tr>
 			        <td>${entry.key}</td> <!-- Access the key (account type) -->
 			        <td>${entry.value}</td> <!-- Access the value (balance) -->
-			        <td><a href="/TermProject_Bank/transactions/accountType=${entry.key}">Transactions</a>
+			        <td><a href="/transactions/accountType=${entry.key}">Transactions</a></td> <!-- Missing closing tag for anchor -->
 			    </tr>
 			</c:forEach>
         </table>
@@ -79,14 +98,12 @@
             <div class="option">
                 <a href="/TermProject_Bank/registerAccount">Open Accounts</a>
             </div>
-            <div class="option">
-                <a href="/TermProject_Bank/internalTransfer">Internal Fund Transfers</a>
-            </div>
-         
+            <!-- Empty div removed -->
         </div>
         <div class="footer">
-            <p>Need help? Contact support.</p>				
+            <p>Need help? Contact support.</p>
         </div>
     </div>
 </body>
 </html>
+
