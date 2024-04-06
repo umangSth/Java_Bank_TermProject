@@ -65,12 +65,12 @@ public class BankContoller {
 		        	 return "redirect:/index/"+(user.getId()); // Redirect to the home page after successful login 
 		            
 		         }else {           
-		        	 return "redirect:/registerAccount?owner_id="+user.getId()+"&message=no_account"; // Redirect back to the registration form if no account found
+		        	 return "redirect:/registerAccount?owner_id="+user.getId()+"&error=no_account"; // Redirect back to the registration form if no account found
 		         }
 	            
 	        } else {
 	            // User authentication failed, redirect back to the login page with an error message
-	            return "redirect:/?error";
+	            return "redirect:/?error=email_or_password_not_match";
 	        }
 	    }
 	 
@@ -247,7 +247,7 @@ public class BankContoller {
 		         // Save the account details
 		         int flag = transaction_dao.internalTransfer(owner_id, fromAcc, toAcc, internalFund.getAmount());
 		         if(flag == 0) {
-		        	 return "redirect:/index/"+owner_id+"?message=insufficent_fund";
+		        	 return "redirect:/index/"+owner_id+"?error=insufficent_fund";
 		         }
 		         return "redirect:/index/"+owner_id; // Redirect to the home page after successful registration
 		    	 

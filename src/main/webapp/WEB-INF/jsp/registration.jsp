@@ -73,12 +73,25 @@
         a:hover {
             text-decoration: underline;
         }
+         .alert {
+            padding: 15px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
     </style>
 </head>
 <body>
     <div class="card">
         <form:form method="post" action="saveUser">  
             <h1>Registration</h1>
+            <div id="errorContainer"></div>
             <table>
                 <tr>
                     <td>Name:</td> 
@@ -117,5 +130,29 @@
             <a href="/TermProject_Bank/">Back to Register page</a>
         </form:form>
     </div>
+    <script>
+   window.onload = function() {
+   	console.log("here i am ")
+       var errorContainer = document.getElementById("errorContainer");
+       var urlParams = new URLSearchParams(window.location.search);
+       var errorMessage = urlParams.get('error');
+
+       if (errorMessage) {
+           var alertDiv = document.createElement("div");
+           alertDiv.classList.add("alert", "alert-warning");
+           alertDiv.textContent = errorMessage;
+           errorContainer.appendChild(alertDiv);
+
+        // Hide the alert after 5 seconds
+           setTimeout(() => {
+               alertDiv.style.display = 'none';
+               // Remove the error parameter from the URL
+               const newUrl = window.location.pathname + window.location.search.replace(/[\?&]error=[^&]+/, '');
+               history.replaceState({}, '', newUrl);
+           }, 3000);
+       }
+   };
+   
+   </script>
 </body>
 </html>

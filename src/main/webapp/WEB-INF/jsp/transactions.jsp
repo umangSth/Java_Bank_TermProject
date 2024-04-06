@@ -40,6 +40,18 @@
         tr:hover {
             background-color: #f5f5f5;
         }
+        .alert {
+            padding: 15px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
     </style>
 </head>
 <body>

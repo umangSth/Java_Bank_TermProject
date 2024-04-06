@@ -37,17 +37,19 @@ public class TransactionDao {
 	        String transactionStatus = mapTransactionStatus(transaction.getTransactionStatus());
 	        String toAccountType = accountDao.mapAccTypeToString(transaction.getFromAccountType());
 	        String fromAccountType = accountDao.mapAccTypeToString(transaction.getToAccountType());
-	        
-	        
-	        // get the current balance of the fromAccount
-	        BigDecimal fromAccountBalance = accountDao.retrieveBalance(fromOwnerId, fromAccountType);
+	        if(transactionType != "DEPOSIT") {
+	        	
+	        	// get the current balance of the fromAccount
+		        BigDecimal fromAccountBalance = accountDao.retrieveBalance(fromOwnerId, fromAccountType);
 
-		     // Check if the balance is sufficient for the transaction
-		        if (fromAccountBalance.compareTo(amount) < 0) {
-		            // Insufficient balance
-		            return -2;
-		        }
-	        
+			     // Check if the balance is sufficient for the transaction
+			        if (fromAccountBalance.compareTo(amount) < 0) {
+			            // Insufficient balance
+			            return -2;
+			        }
+	        	
+	        }       
+	    	        
 	        boolean tochk = accountDao.checkAccountHasType(toOwnerId, toAccountType);
 	        boolean fromchk = accountDao.checkAccountHasType(fromOwnerId, fromAccountType);
 	        if (!tochk && !fromchk) {

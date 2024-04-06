@@ -50,10 +50,23 @@
         h1 {
             text-align: center;
         }
+         .alert {
+            padding: 15px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
     </style>
 </head>
 <body>
     <h1>Transaction Form</h1>
+     <div id="errorContainer"></div>
     <form:form action="/TermProject_Bank/withdrawdepositAction" method="post"  modelAttribute="transaction">
         <table>
             <tr>

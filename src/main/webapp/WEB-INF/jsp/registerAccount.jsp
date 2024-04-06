@@ -105,5 +105,29 @@
         </form:form>
         <a href="/TermProject_Bank/registration">Back to Login page</a>
     </div>
+    <script>
+   window.onload = function() {
+   	console.log("here i am ")
+       var errorContainer = document.getElementById("errorContainer");
+       var urlParams = new URLSearchParams(window.location.search);
+       var errorMessage = urlParams.get('error');
+
+       if (errorMessage) {
+           var alertDiv = document.createElement("div");
+           alertDiv.classList.add("alert", "alert-warning");
+           alertDiv.textContent = errorMessage;
+           errorContainer.appendChild(alertDiv);
+
+        // Hide the alert after 5 seconds
+           setTimeout(() => {
+               alertDiv.style.display = 'none';
+               // Remove the error parameter from the URL
+               const newUrl = window.location.pathname + window.location.search.replace(/[\?&]error=[^&]+/, '');
+               history.replaceState({}, '', newUrl);
+           }, 3000);
+       }
+   };
+   
+   </script>
 </body>
 </html>
