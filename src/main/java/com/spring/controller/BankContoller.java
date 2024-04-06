@@ -190,8 +190,9 @@ public class BankContoller {
 	         Integer user_id = (Integer) session.getAttribute("user_id");
 	         
 	         List<Transaction> transactions = transaction_dao.getTransactions(user_id, accountType);
+	         
 	         if (transactions.isEmpty()) {
-	             return "redirect:/index/" + user_id;
+	             return "redirect:/index/" + user_id+"?error=Null_return";
 	         } else {
 	             model.addAttribute("transactions", transactions);
 	             return "transactions";
@@ -254,9 +255,11 @@ public class BankContoller {
 
 	 @RequestMapping("/withdraw_deposit/{accountType}")
 	 public String showWithdrawDeposit(@PathVariable String accountType, Model m) {
-	     m.addAttribute("accountType", accountType);
+	     m.addAttribute("fromAccountType", accountType);
+	     m.addAttribute("toAccountType", accountType);
+	     System.out.println("here 1      >"+ accountType);
 	     m.addAttribute("transaction", new Transaction()); // Add a new transaction object
-	     return "internalTransfer";
+	     return "withdraw_deposit";
 	 }
 	 
 	 @RequestMapping(value="/withdrawdepositAction", method = RequestMethod.POST)
@@ -265,13 +268,15 @@ public class BankContoller {
 			 HttpSession session = request.getSession(false);
 		     if (session != null && session.getAttribute("user_id") != null) {
 		    	 int owner_id = (int) session.getAttribute("user_id");
-		    	 
+		    	 System.out.println("here      > "+ transaction.getToAccountType());
 		    	// Set transaction date to current date and time
 		         transaction.setTransactionDate(LocalDateTime.now());
 		         if(transaction.getTransactionType().toString() == "WITHDRAW") {
 		        	 transaction.setFromAccount(owner_id);
+		        	 transaction.setToAccount(0);
 		         }else {
 		        	 transaction.setToAccount(owner_id); 
+		        	 transaction.setFromAccount(0);
 		         }        
 		        
 		    	 int result = transaction_dao.saveTransaction(transaction);

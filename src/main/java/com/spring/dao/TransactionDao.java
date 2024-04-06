@@ -2,34 +2,43 @@ package com.spring.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import com.spring.beans.Transaction;
 import com.spring.beans.Transaction.TransactionStatus;
 import com.spring.beans.Transaction.TransactionType;
 
+@Repository
 public class TransactionDao {
 	JdbcTemplate template;  
-	AccountDao ad = new AccountDao();
-	  
+	AccountDao accountDao;
+	@Autowired 
 	public void setTemplate(JdbcTemplate template) {  
 	    this.template = template;  
-	}
+	} 
+	
+	@Autowired
+	 public TransactionDao(JdbcTemplate template, AccountDao accountDao) {
+        this.template = template;
+        this.accountDao = accountDao;
+    }
+
 	
 	public int saveTransaction(Transaction transaction) {
 	    try {
-	    	
 	    	int fromOwnerId = transaction.getFromAccount();
 	        int toOwnerId = transaction.getToAccount();
+	       
 	        String transactionType = mapTransactionType(transaction.getTransactionType());
 	        String transactionStatus = mapTransactionStatus(transaction.getTransactionStatus());
-	        String toAccountType = ad.mapAccTypeToString(transaction.getFromAccountType());
-	        String fromAccountType = ad.mapAccTypeToString(transaction.getToAccountType());
+	        String toAccountType = accountDao.mapAccTypeToString(transaction.getFromAccountType());
+	        String fromAccountType = accountDao.mapAccTypeToString(transaction.getToAccountType());
 	        
-	        boolean tochk = ad.checkAccountHasType(toOwnerId, toAccountType);
-	        boolean fromchk = ad.checkAccountHasType(fromOwnerId, fromAccountType);
+	        boolean tochk = accountDao.checkAccountHasType(toOwnerId, toAccountType);
+	        boolean fromchk = accountDao.checkAccountHasType(fromOwnerId, fromAccountType);
 	        if (!tochk && !fromchk) {
 	        	return -1;
 	        }
@@ -44,12 +53,12 @@ public class TransactionDao {
 	        // Update the balance in the respective accounts based on the transaction type
 	        switch (transaction.getTransactionType()) {
 	            case WITHDRAW:
-	                ad.withdrawBalance(fromOwnerId, fromAccountType, transaction.getAmount());
+	            	accountDao.withdrawBalance(fromOwnerId, fromAccountType, transaction.getAmount());
 	                break;
 	            case DEPOSIT:
 	                // Check if the 'toAccount' exists
 	                if (toOwnerId != 0 && toAccountType != null) {
-	                    ad.depositBalance(toOwnerId, toAccountType, transaction.getAmount());
+	                	accountDao.depositBalance(toOwnerId, toAccountType, transaction.getAmount());
 	                } else {
 	                    throw new IllegalArgumentException("Destination account does not exist");
 	                }
@@ -57,8 +66,8 @@ public class TransactionDao {
 	            case TRANSFER:
 	                
 	                // Withdraw from 'fromAccount' and deposit to 'toAccount'
-	                ad.withdrawBalance(fromOwnerId, fromAccountType, transaction.getAmount());
-	                ad.depositBalance(toOwnerId, toAccountType, transaction.getAmount());
+	            	accountDao.withdrawBalance(fromOwnerId, fromAccountType, transaction.getAmount());
+	            	accountDao.depositBalance(toOwnerId, toAccountType, transaction.getAmount());
 	                break;
 	            default:
 	                // Handle unsupported transaction types
@@ -78,7 +87,7 @@ public class TransactionDao {
 	    // Define SQL queries to update the balances of the source and destination accounts
 	    String updateFromAccSql = "UPDATE account SET balance = balance - ? WHERE owner_id = ? AND account_type = ? AND balance >= ?";
 	    String updateToAccSql = "UPDATE account SET balance = balance + ? WHERE owner_id = ? AND account_type = ?";
-
+	    AccountDao ad = new AccountDao();
 	    try {
 	        // Deduct the amount from the source account only if the balance is sufficient
 	        int rowsUpdated = template.update(updateFromAccSql, amount, ownerId, fromAccType, amount);
@@ -102,9 +111,10 @@ public class TransactionDao {
 
 
 
-	public List<Transaction> getTransactions(int accountId, String accountType) {
-	    String sql = "SELECT * FROM transaction WHERE (toAccount = ? OR fromAccount = ?) AND account_type = ?";
-	    return template.query(sql, new TransactionMapper(), accountId, accountId, accountType);
+	public List<Transaction> getTransactions(int accountId, String accountType) {		
+	    String sql = "SELECT * FROM transaction WHERE (to_account = ? OR from_account = ?) AND to_account_type=?";
+	    List<Transaction> sr = template.query(sql, new TransactionMapper(), accountId, accountId, accountType);
+	    return sr;
 	}
 	
 	

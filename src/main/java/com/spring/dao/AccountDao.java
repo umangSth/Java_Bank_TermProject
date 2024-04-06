@@ -5,15 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import com.spring.beans.Account;
 import com.spring.beans.Account.AccountType;
 
+@Repository
 public class AccountDao {
 	JdbcTemplate template;  
-	  
+	@Autowired 
 	public void setTemplate(JdbcTemplate template) {  
 	    this.template = template;  
 	} 

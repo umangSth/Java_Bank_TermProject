@@ -54,20 +54,24 @@
 </head>
 <body>
     <h1>Transaction Form</h1>
-    <form:form action="/withdrawdepositAction" method="post">
+    <form:form action="/TermProject_Bank/withdrawdepositAction" method="post"  modelAttribute="transaction">
         <table>
             <tr>
-                <td>Transaction Type:</td>
-                <td>
-                    <form:select path="fromAccountType">
-                        <form:option value="WITHDRAW">Withdraw</form:option>
-                        <form:option value="DEPOSIT">Deposit</form:option>
-                      </form:select>
-                </td>
-            </tr>
+         
+         		<form:input type="hidden" path="toAccountType" value="${toAccountType}"/>
+         		<form:input type="hidden" path="fromAccountType" value="${fromAccountType}" />
+			    <td>Transaction Type:</td>
+			    <td>
+			        <form:select path="transactionType">
+			            <form:option value="WITHDRAW">Withdraw</form:option>
+			            <form:option value="DEPOSIT">Deposit</form:option>
+			        </form:select>
+			    </td>
+			</tr>
+
              <tr>
                 <td>Transaction Status:</td>
-                <td><form:input type="text" path="transactionStatus" value="COMPLETED" readonly /></td>
+                <td><form:input type="text" path="transactionStatus" value="COMPLETED" readonly="true" /></td>
             </tr>
             <tr>
                 <td>Amount:</td>
