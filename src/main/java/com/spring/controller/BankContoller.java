@@ -1,6 +1,7 @@
 package com.spring.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -251,6 +252,52 @@ public class BankContoller {
 
 	 
 
+	 @RequestMapping("/withdraw_deposit/{accountType}")
+	 public String showWithdrawDeposit(@PathVariable String accountType, Model m) {
+	     m.addAttribute("accountType", accountType);
+	     m.addAttribute("transaction", new Transaction()); // Add a new transaction object
+	     return "internalTransfer";
+	 }
+	 
+	 @RequestMapping(value="/withdrawdepositAction", method = RequestMethod.POST)
+	 public String withdrawdepositAction(@ModelAttribute("transaction") Transaction transaction, RedirectAttributes redirectAttributes,  HttpServletRequest request) {
+		 try {
+			 HttpSession session = request.getSession(false);
+		     if (session != null && session.getAttribute("user_id") != null) {
+		    	 int owner_id = (int) session.getAttribute("user_id");
+		    	 
+		    	// Set transaction date to current date and time
+		         transaction.setTransactionDate(LocalDateTime.now());
+		         if(transaction.getTransactionType().toString() == "WITHDRAW") {
+		        	 transaction.setFromAccount(owner_id);
+		         }else {
+		        	 transaction.setToAccount(owner_id); 
+		         }        
+		        
+		    	 int result = transaction_dao.saveTransaction(transaction);
+		    	 if(result == -1) {
+		    		 return "redirect:/index/"+owner_id+"?error=no_account_type_found";
+		    	 }else if(result == 0) {
+		    		 return "redirect:/index/"+owner_id+"?error=some_error_in_transaction";
+		    	 }
+		    	 
+		    	 return "redirect:/index/"+owner_id+"?success=transaction_done"; // Redirect to the home page after successful registration
+		     }else {
+		    	 // Redirect to the index page if the user is not logged in
+		         return "redirect:/?error=no_session";
+		     }
+			 
+		 }catch(Exception e) {
+			 // Log the exception for debugging purposes
+	         e.printStackTrace();
+	         // Add error message to be displayed on the registration page
+	         redirectAttributes.addFlashAttribute("error", "An error occurred while registering the account. Please try again.");
+			 return "redirect:/"; 
+		 }
+	 }
+	   
+	 
+	 
 	 
 	 // -------> Transaction controller ends
 	

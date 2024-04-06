@@ -20,22 +20,27 @@ public class TransactionDao {
 	
 	public int saveTransaction(Transaction transaction) {
 	    try {
-	        // Insert the transaction record into the database
-	        String sql = "INSERT INTO transaction (transactionType, toAccount, fromAccount, amount, transactionDate, transactionStatus) VALUES (?, ?, ?, ?, ?, ?)";
+	    	
+	    	int fromOwnerId = transaction.getFromAccount();
+	        int toOwnerId = transaction.getToAccount();
 	        String transactionType = mapTransactionType(transaction.getTransactionType());
 	        String transactionStatus = mapTransactionStatus(transaction.getTransactionStatus());
-	        template.update(sql, transactionType, transaction.getToAccount(), transaction.getFromAccount(), transaction.getAmount(), transaction.getTransactionDate(), transactionStatus);
-
-	        // Retrieve the owner ID and account type for the 'fromAccount'
-	        AccountDao ad = new AccountDao();
-	        Map<String, Object> fromAccountInfo = ad.getOwnerIdAndType(transaction.getFromAccount());
-	        int fromOwnerId = (int) fromAccountInfo.get("owner_id");
-	        String fromAccountType = (String) fromAccountInfo.get("accountType");
+	        String toAccountType = ad.mapAccTypeToString(transaction.getFromAccountType());
+	        String fromAccountType = ad.mapAccTypeToString(transaction.getToAccountType());
 	        
-	        // Retrieve the owner ID and account type for the 'toAccount'
-            Map<String, Object> toAccountInfo = ad.getOwnerIdAndType(transaction.getToAccount());
-            int toOwnerId = (int) toAccountInfo.get("owner_id");
-            String toAccountType = (String) toAccountInfo.get("accountType");
+	        boolean tochk = ad.checkAccountHasType(toOwnerId, toAccountType);
+	        boolean fromchk = ad.checkAccountHasType(fromOwnerId, fromAccountType);
+	        if (!tochk && !fromchk) {
+	        	return -1;
+	        }
+	        
+	    	
+	        // Insert the transaction record into the database
+	        String sql = "INSERT INTO transaction (transaction_type, to_account, from_account, amount, transaction_date, transaction_status,from_account_type, to_account_type) VALUES (?, ?, ?, ?, ?, ?,?,?)";
+	        
+	        template.update(sql, transactionType, transaction.getToAccount(), transaction.getFromAccount(), transaction.getAmount(), transaction.getTransactionDate(), transactionStatus, fromAccountType, toAccountType);
+
+	        
 	        // Update the balance in the respective accounts based on the transaction type
 	        switch (transaction.getTransactionType()) {
 	            case WITHDRAW:
@@ -104,7 +109,7 @@ public class TransactionDao {
 	
 	
 	
-	 private String mapTransactionType(TransactionType tt) {
+	 public String mapTransactionType(TransactionType tt) {
 		 if(tt == TransactionType.WITHDRAW) {
 			return "WITHDRAW"; 
 		 }else if(tt == TransactionType.DEPOSIT) {
@@ -117,7 +122,7 @@ public class TransactionDao {
 	 }
 	 
 	 
-	 private String mapTransactionStatus(TransactionStatus ts) {
+	 public String mapTransactionStatus(TransactionStatus ts) {
 		 if(ts == TransactionStatus.PENDING) {
 			 return "PENDING";
 		 }else if(ts == TransactionStatus.COMPLETED) {

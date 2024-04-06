@@ -15,13 +15,14 @@ public class Transaction {
     private BigDecimal amount;
     private LocalDateTime transactionDate;
     private TransactionStatus transactionStatus; // Enum representing pending, completed, or failed
-	private AccountType accountType;
+	private AccountType toAccountType;
+	private AccountType fromAccountType;
     
     
     
  public Transaction(int transactionId, TransactionType transactionType, int toAccount, int fromAccount,
 			BigDecimal amount, LocalDateTime transactionDate, TransactionStatus transactionStatus,
-			AccountType accountType) {
+			AccountType toAccountType, AccountType fromAccountType) {
 		super();
 		this.transactionId = transactionId;
 		this.transactionType = transactionType;
@@ -30,17 +31,25 @@ public class Transaction {
 		this.amount = amount;
 		this.transactionDate = transactionDate;
 		this.transactionStatus = transactionStatus;
-		this.accountType = accountType;
+		this.toAccountType = toAccountType;
+		this.fromAccountType = fromAccountType;
 	}
 
-public AccountType getAccountType() {
-		return accountType;
-	}
 
-	public void setAccountType(AccountType accountType) {
-		this.accountType = accountType;
-	}
 
+
+public AccountType getToAccountType() {
+	return toAccountType;
+}
+public void setToAccountType(AccountType toAccountType) {
+	this.toAccountType = toAccountType;
+}
+public AccountType getFromAccountType() {
+	return fromAccountType;
+}
+public void setFromAccountType(AccountType fromAccountType) {
+	this.fromAccountType = fromAccountType;
+}
 public int getTransactionId() {
 		return transactionId;
 	}
