@@ -72,31 +72,50 @@
         a:hover {
             text-decoration: underline;
         }
+          .alert {
+            padding: 15px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
     </style>
 </head>
 <body>
     <div class="card">
         <form:form method="post" action="registerAccountAction" modelAttribute="account">
             <h1>Registration</h1>
+            <div id="errorContainer"></div>
             <table>
               <tr>
                 <td>Owner ID:</td>
                 <td><form:input type="number" path="owner_id" value="${owner_id}" readonly="true" /></td>
             </tr>
-                <tr>
-                    <td>Balance:</td>
-                    <td><form:input type="text" path="balance" /></td>
-                </tr>
-                <tr>
-                    <td>Account Type:</td>
-                    <td>
-                        <form:select path="accountType">
-                            <form:option value="CHECKING">Checking</form:option>
-                            <form:option value="BUSINESS">Business</form:option>
-                            <form:option value="SAVINGS">Savings</form:option>
-                        </form:select>
-                    </td>
-                </tr>
+                
+				<tr>
+					    <td>Account Type:</td>
+					    <td>
+					        <c:forEach var="accountType" items="${allAccountTypes}">
+					            <c:set var="checked" value=""/>
+					            <c:set var="disabled" value="" />
+					            <c:if test="${accountTypes != null && accountTypes.contains(accountType)}">
+					                <c:set var="checked" value="checked" />
+					                <c:set var="disabled" value="disabled" />
+					            </c:if>
+					            <input type="checkbox" name="accountTypes" value="${accountType}" ${checked} ${disabled} /> ${accountType}
+					            <br/>
+					        </c:forEach>
+					    </td>
+					</tr>
+
+
+                
+	           
                 <tr>
                     <td></td>
                     <td><input type="submit" value="Save" /></td>

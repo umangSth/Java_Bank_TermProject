@@ -1,6 +1,7 @@
 package com.spring.dao;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,11 +23,30 @@ public class AccountDao {
 	} 
 	
 	public int saveAccount(Account a) {
-	    String accountType = mapAccTypeToString(a.getAccountType());
-	    String sql = "INSERT INTO account (owner_id, balance, account_type) VALUES (?, ?, ?)";
-	    System.out.println("here    - - - >   "+ a.getOwner_id() );
-	    return template.update(sql, a.getOwner_id(), a.getBalance(), accountType);
+	    // Check if the list of account types is not null or empty
+	    List<AccountType> accountTypes = a.getAccountTypes();
+	    if (accountTypes == null || accountTypes.isEmpty()) {
+	        // If the list is null or empty, return 0 indicating failure
+	        return 0;
+	    }
+	    
+	    // Iterate over the list of account types and save each one
+	    for (AccountType accountType : accountTypes) {
+	        String mappedAccountType = mapAccTypeToString(accountType);
+	        // Assuming your SQL query to insert into the database looks like this
+	        String sql = "INSERT INTO account (owner_id, balance, account_type) VALUES (?, ?, ?)";
+	        // Execute the SQL query to insert the account into the database
+	        int rowsAffected = template.update(sql, a.getOwner_id(), BigDecimal.ZERO, mappedAccountType);
+	        // If rowsAffected is 0, it means the insertion failed, so return 0
+	        if (rowsAffected == 0) {
+	            return 0;
+	        }
+	    }
+	    
+	    // If all insertions were successful, return 1
+	    return 1;
 	}
+
 	
 	
 	public String mapAccTypeToString(AccountType at) {
@@ -34,8 +54,10 @@ public class AccountDao {
 			return "CHECKING";
 		} else if(at == AccountType.SAVINGS) {
 			return "SAVINGS";
-		}else {
+		}else if(at == AccountType.BUSINESS) {
 			return "BUSINESS";
+		}else {
+			return "";
 		}
 	}
 	
@@ -105,7 +127,7 @@ public class AccountDao {
 	}
 	
 	public Map<String, Object> getOwnerIdAndType(int accountId) {
-        String sql = "SELECT owner_id, accountType FROM account WHERE account_id = ?";
+        String sql = "SELECT owner_id, account_type FROM account WHERE account_id = ?";
         try {
             // Execute the query and retrieve the owner ID and account type
             return template.queryForMap(sql, accountId);
@@ -146,5 +168,17 @@ public class AccountDao {
 	        }
 	    }
 	}
-	
+	public List<AccountType> returnAccountTypes(int owner_id) {
+        String sql = "SELECT account_type FROM account WHERE owner_id=?";
+        List<Map<String, Object>> rows = template.queryForList(sql, owner_id);
+        List<AccountType> ownerAccTypes = new ArrayList<>();
+
+        for (Map<String, Object> row : rows) {
+            String accountTypeStr = (String) row.get("account_type");
+            AccountType accountType = AccountType.valueOf(accountTypeStr);
+            ownerAccTypes.add(accountType);
+        }
+
+        return ownerAccTypes;
+    }
 }

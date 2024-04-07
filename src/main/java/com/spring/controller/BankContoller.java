@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.spring.beans.Account;
+import com.spring.beans.Account.AccountType;
 import com.spring.beans.InternalFundTransfer;
 import com.spring.beans.Transaction;
 import com.spring.beans.User;
@@ -123,22 +124,32 @@ public class BankContoller {
 	 
 	 
 	 @RequestMapping(value="/registerAccount")
-	 public String showAccountForm(@RequestParam(value = "owner_id", required = false) Integer owner_id, HttpSession session, Model m) {
-	     if (owner_id == null) {
+	 public String showAccountForm(@RequestParam(value = "owner_id", required = false) Integer owner_id, HttpSession session, Model m) {     
+		 if (owner_id == null) {	    	 
 	         // Check if user_id is present in the session
 	         Integer user_id = (Integer) session.getAttribute("user_id");
 	         if (user_id != null) {
 	             // Use user_id from session attribute as owner_id
 	             m.addAttribute("owner_id", user_id);
+	             owner_id= user_id;
 	         } else {
 	             
-	             return "redirect:/error"; // Redirect to error page
+	             return "redirect:/?error=user_id_not_found"; // Redirect to error page
 	         }
 	     } else {
 	         // Use owner_id provided as request parameter
 	         m.addAttribute("owner_id", owner_id);
 	     }
 	     
+	     // Populate allAccountTypes attribute with all possible AccountType enum values
+	     m.addAttribute("allAccountTypes", AccountType.values());
+	     
+	     // Check if the account already has associated account types and pre-select them
+	     List<AccountType> accountTypeList = account_dao.returnAccountTypes(owner_id);// Logic to retrieve associated account types	     
+	     if (accountTypeList != null) {
+	         m.addAttribute("accountTypes", accountTypeList);
+	     }
+
 	     m.addAttribute("account", new Account());
 	     return "registerAccount";
 	 }
@@ -148,6 +159,7 @@ public class BankContoller {
 	 public String registerAccountAction(@ModelAttribute("account") Account account, HttpSession session, RedirectAttributes redirectAttributes) {
 	     try {
 	    	 String accType = account_dao.mapAccTypeToString(account.getAccountType());
+	    	 System.out.println("here 12 ----- > " + account.getAccountType() + accType);
 	         // Check if the account of the same type already exists for the owner
 	         boolean accountExists = account_dao.checkAccountHasType(account.getOwner_id(), accType);
 	         if (accountExists) {
@@ -163,7 +175,7 @@ public class BankContoller {
 	         if (user_id != null) {
 	        	 return "redirect:/index/"+(user_id); 
 	         }else {
-		         return "redirect:/?Account=success"; // Redirect to the home page after successful registration	        	 
+		         return "redirect:/?error=Account_create_success"; // Redirect to the home page after successful registration	        	 
 	         }
 
 	     } catch (Exception e) {
@@ -271,7 +283,7 @@ public class BankContoller {
 	 public String showWithdrawDeposit(@PathVariable String accountType, Model m) {
 	     m.addAttribute("fromAccountType", accountType);
 	     m.addAttribute("toAccountType", accountType);
-	     System.out.println("here 1      >"+ accountType);
+	    
 	     m.addAttribute("transaction", new Transaction()); // Add a new transaction object
 	     return "withdraw_deposit";
 	 }

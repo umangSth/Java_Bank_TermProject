@@ -1,6 +1,7 @@
 package com.spring.beans;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 public class Account {
@@ -8,7 +9,14 @@ public class Account {
 	private int owner_id;
 	private BigDecimal balance;
 	private AccountType accountType; // Enum representing checking, business, or savings
+	private List<AccountType> accountTypes;
 
+	public List<AccountType> getAccountTypes() {
+		return accountTypes;
+	}
+	public void setAccountTypes(List<AccountType> accountTypes) {
+		this.accountTypes = accountTypes;
+	}
 	public int getAccount_id() {
 		return account_id;
 	}
