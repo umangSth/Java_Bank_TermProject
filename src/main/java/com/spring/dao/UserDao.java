@@ -16,6 +16,7 @@ public class UserDao {
 	}
 	
 	public int save(User u) {
+		
 	    String userTypeString = mapUserTypeToString(u.getUser_type());
 	    String sql = "insert into user(name, email, phone, address, user_type, password) values(?,?,?,?,?,?)";
 	    return template.update(sql, u.getName(), u.getEmail(), u.getPhone(), u.getAddress(), userTypeString, u.getPassword());

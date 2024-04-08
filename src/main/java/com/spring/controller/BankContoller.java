@@ -52,8 +52,13 @@ public class BankContoller {
 	
 	 @RequestMapping(value="/loginAction", method = RequestMethod.POST)
 	    public String loginAction(@RequestParam("email") String email, @RequestParam("password") String password, HttpServletRequest request) {
-	        // Check if the user exists in the database
+	     if(email.isEmpty() || password.isEmpty()) {
+	            return "redirect:/?error=email_or_password_empty";
+	     }
+		 
+		 // Check if the user exists in the database
 	        User user = user_dao.getUserByEmail(email, password);
+	        
 	        		
 	        if (user != null) {
 	            // Start a session and save the email
@@ -90,6 +95,10 @@ public class BankContoller {
 		    if (!isEmailUnique(user.getEmail())) {
 		        return "redirect:/registration?error=not_unique_email";
 		    }
+		    if(user.getEmail().isEmpty() || user.getName().isEmpty() || user.getPassword().isBlank()) {
+		    	return "redirect:/registration?error=fields_empty";
+		    }
+		    
 		    // If email is unique, proceed with user registration
 		    user_dao.save(user);
 		    User u = user_dao.getUserByEmail(user.getEmail(), user.getPassword());
@@ -159,7 +168,7 @@ public class BankContoller {
 	 public String registerAccountAction(@ModelAttribute("account") Account account, HttpSession session, RedirectAttributes redirectAttributes) {
 	     try {
 	    	 String accType = account_dao.mapAccTypeToString(account.getAccountType());
-	    	 System.out.println("here 12 ----- > " + account.getAccountType() + accType);
+	    	 
 	         // Check if the account of the same type already exists for the owner
 	         boolean accountExists = account_dao.checkAccountHasType(account.getOwner_id(), accType);
 	         if (accountExists) {
@@ -167,6 +176,8 @@ public class BankContoller {
 	             redirectAttributes.addFlashAttribute("error", "An account of the same type already exists.");
 	             return "redirect:/registerAccount?error=An_account_of_the_same_type_already_exists."; // Redirect back to the registration form
 	         }
+	       
+	         
 
 	         // Perform validation (e.g., check for null values, validate account type, validate balance)
 	         // Save the account details
