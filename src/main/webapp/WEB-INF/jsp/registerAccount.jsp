@@ -160,15 +160,11 @@ form .error {
 									readonly="true" class="form-control" id="name"
 									placeholder="Enter full name" />
 							</div>
-							<div class="form-group">
-								<label for="email">Balance</label>
-								<form:input type="text" path="balance" class="form-control"
-									id="email" placeholder="Enter balance" />
-							</div>
+							
 							
 							<div class="form-group">
 								<div class="form-check">
-								<label for="accountType">Account Type:</label>
+								<label for="accountType">Account Type:</label><br>
 								<c:forEach var="accountType" items="${allAccountTypes}">
 									<c:set var="checked" value=""/>
 									<c:set var="disabled" value="" />
@@ -194,11 +190,15 @@ form .error {
 								</div>
 							</div>
 
-							<div class="form-group">
-								<p class="text-center">
-									<a href="TermProject_Bank/registration" id="signup">Back to Registration Page</a>
-								</p>
-							</div>
+							<%-- Check if session attributes are present --%>
+								<c:if test="${empty sessionScope.email and empty sessionScope.name and empty sessionScope.user_id}">
+								    <div class="form-group">
+								        <p class="text-center">
+								            <a href="/TermProject_Bank/registration" id="signup">Back to Registration Page</a>
+								        </p>
+								    </div>
+								</c:if>
+
 						</form:form>
 
 					</div>
