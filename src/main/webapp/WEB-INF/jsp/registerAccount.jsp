@@ -23,10 +23,12 @@
 	integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
 	crossorigin="anonymous">
 <head>
-<meta charset="UTF-8">
-<title>Registration</title>
-<style>
-body {
+    <meta charset="UTF-8">
+    <title>Registration</title>
+    <style>
+        
+
+		body {
 	background-color: #f5f5f5;
 	margin: 0;
 	padding: 0;
@@ -127,10 +129,11 @@ form .error {
 	background-color: #fff3cd;
 	border-color: #ffeeba;
 }
-</style>
+    </style>
 </head>
 <body>
-	
+    
+
 	<div class="container">
 		<div class="row">
 			<div class="col-md-5 mx-auto">
@@ -164,12 +167,20 @@ form .error {
 							</div>
 							
 							<div class="form-group">
+								<div class="form-check">
 								<label for="accountType">Account Type:</label>
-								<form:select id="accountType" path="accountType" class="form-control">
-									<form:option value="CHECKING">Checking</form:option>
-									<form:option value="BUSINESS">Business</form:option>
-									<form:option value="SAVINGS">Savings</form:option>
-								</form:select>
+								<c:forEach var="accountType" items="${allAccountTypes}">
+									<c:set var="checked" value=""/>
+									<c:set var="disabled" value="" />
+									<c:if test="${accountTypes != null && accountTypes.contains(accountType)}">
+										<c:set var="checked" value="checked" />
+										<c:set var="disabled" value="disabled" />
+									</c:if>
+									<input class="form-check-input" type="checkbox" name="accountTypes" value="${accountType}" ${checked} ${disabled} /> ${accountType}
+									<br/>
+								</c:forEach>
+								
+							</div>
 							</div>
 
 							<div class="col-md-12 text-center ">
@@ -196,7 +207,7 @@ form .error {
 			</div>
 		</div>
 	</div>
-	<script>
+    <script>
    window.onload = function() {
    	console.log("here i am ")
        var errorContainer = document.getElementById("errorContainer");

@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.javatpoint</groupId>
-  <artifactId>Assignment_5_Umanga</artifactId>
+  <artifactId>TermProject_Bank</artifactId>
   <packaging>war</packaging>
   <version>0.0.1-SNAPSHOT</version>
-  <name>Assignment_5_Umanga Maven Webapp</name>
+  <name>TermProject_Bank Maven Webapp</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -59,6 +59,6 @@
     
   </dependencies>
   <build>
-    <finalName>Assignment_5_Umanga</finalName>
+    <finalName>TermProject_Bank</finalName>
   </build>
 </project>
