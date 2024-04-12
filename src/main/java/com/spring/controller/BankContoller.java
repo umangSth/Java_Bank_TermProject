@@ -322,7 +322,7 @@ public class BankContoller {
 		    		 return "redirect:/index/"+owner_id+"?error=some_error_in_transaction";
 		    	 }
 		    	 
-		    	 return "redirect:/index/"+owner_id+"?success=transaction_done"; // Redirect to the home page after successful registration
+		    	 return "redirect:/index/"+owner_id+"?error=transaction_done"; // Redirect to the home page after successful registration
 		     }else {
 		    	 // Redirect to the index page if the user is not logged in
 		         return "redirect:/?error=no_session";
@@ -350,6 +350,7 @@ public class BankContoller {
 	     if (session != null && session.getAttribute("user_id") != null) {
 	    	 int owner_id = (int) session.getAttribute("user_id");
 	    	 transaction.setFromAccount(owner_id);
+	    	 transaction.setToAccount(0);
 	    	 transaction.setTransactionDate(LocalDateTime.now());
 	    	 int result = transaction_dao.saveTransaction(transaction);
 	    	 if(result == -1) {
@@ -360,7 +361,7 @@ public class BankContoller {
 	    		 return "redirect:/index/"+owner_id+"?error=insufficent_amount";
 	    	 }
 	    	 
-	    	 return "redirect:/index/"+owner_id+"?success=transaction_done"; // Redirect to the home page after successful registration
+	    	 return "redirect:/index/"+owner_id+"?error=transaction_done"; // Redirect to the home page after successful registration
 	    	
 	     }else {
 	    	 
@@ -389,6 +390,8 @@ public class BankContoller {
 	     if (session != null && session.getAttribute("user_id") != null) {
 	    	 int owner_id = (int) session.getAttribute("user_id");
 	    	 transaction.setFromAccount(owner_id);
+	    	 transaction.setToAccount(0);
+	    	 transaction.setToAccountType(transaction.getFromAccountType());
 	    	 transaction.setTransactionDate(LocalDateTime.now());
 	    	 int result = transaction_dao.saveTransaction(transaction);
 	    	 if(result == -1) {
@@ -399,7 +402,7 @@ public class BankContoller {
 	    		 return "redirect:/index/"+owner_id+"?error=insufficent_amount";
 	    	 }
 	    	 
-	    	 return "redirect:/index/"+owner_id+"?success=transaction_done"; // Redirect to the home page after successful registration
+	    	 return "redirect:/index/"+owner_id+"?error=transaction_done"; // Redirect to the home page after successful registration
 	    	
 	     }else {
 	    	 

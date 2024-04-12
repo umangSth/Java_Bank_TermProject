@@ -35,10 +35,15 @@ public class TransactionDao {
 	        
 	        String transactionType = mapTransactionType(transaction.getTransactionType());
 	        String transactionStatus = mapTransactionStatus(transaction.getTransactionStatus());
-	        String toAccountType = accountDao.mapAccTypeToString(transaction.getFromAccountType());
-	        String fromAccountType = accountDao.mapAccTypeToString(transaction.getToAccountType());
-	        if(transactionType != "DEPOSIT") {
-	        	
+	        String toAccountType = accountDao.mapAccTypeToString(transaction.getToAccountType());
+	        String fromAccountType = accountDao.mapAccTypeToString(transaction.getFromAccountType());
+	        boolean tochk = accountDao.checkAccountHasType(toOwnerId, toAccountType);
+	        boolean fromchk = accountDao.checkAccountHasType(fromOwnerId, fromAccountType);
+	        if (!tochk && !fromchk) {
+	        	return -1;
+	        }
+	        if(transactionType != "DEPOSIT" ) {
+	     
 	        	// get the current balance of the fromAccount
 		        BigDecimal fromAccountBalance = accountDao.retrieveBalance(fromOwnerId, fromAccountType);
 
@@ -50,11 +55,7 @@ public class TransactionDao {
 	        	
 	        }       
 	    	        
-	        boolean tochk = accountDao.checkAccountHasType(toOwnerId, toAccountType);
-	        boolean fromchk = accountDao.checkAccountHasType(fromOwnerId, fromAccountType);
-	        if (!tochk && !fromchk) {
-	        	return -1;
-	        }
+	        
 	        
 	    	
 	        // Insert the transaction record into the database
@@ -69,6 +70,7 @@ public class TransactionDao {
 	            	accountDao.withdrawBalance(fromOwnerId, fromAccountType, transaction.getAmount());
 	                break;
 	            case UTILITY:
+	            	
 	            	accountDao.withdrawBalance(fromOwnerId, fromAccountType, transaction.getAmount());
                 	break;
 	            case DEPOSIT:
