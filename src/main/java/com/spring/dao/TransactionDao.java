@@ -40,10 +40,15 @@ public class TransactionDao {
 	        boolean tochk = accountDao.checkAccountHasType(toOwnerId, toAccountType);
 	        
 	        boolean fromchk = accountDao.checkAccountHasType(fromOwnerId, fromAccountType);
-	        if (!tochk || !fromchk) {
-	        	System.out.println("herer");
-	        	return -1;
+ 
+	        if(transactionType != "DEPOSIT") {
+	            if(toOwnerId != 0) {
+		        	if (!tochk || !fromchk) {
+			        	return -1;
+			        }
+		        }
 	        }
+	    
 	        if(transactionType != "DEPOSIT" ) {
 	     
 	        	// get the current balance of the fromAccount
