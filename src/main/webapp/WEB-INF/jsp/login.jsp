@@ -199,7 +199,7 @@ form .error {
 
 	<script>
      window.onload = function() {
-     	console.log("here i am ")
+     	
          var errorContainer = document.getElementById("errorContainer");
          var urlParams = new URLSearchParams(window.location.search);
          var errorMessage = urlParams.get('error');

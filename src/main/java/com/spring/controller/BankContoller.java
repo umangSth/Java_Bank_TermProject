@@ -260,7 +260,7 @@ public class BankContoller {
 		         boolean fromAccountExists = account_dao.checkAccountHasType(owner_id, fromAcc);
 		         boolean toAccountExists = account_dao.checkAccountHasType(owner_id, toAcc);
 		        
-		         if (!fromAccountExists && !toAccountExists) {
+		         if (!fromAccountExists || !toAccountExists) {
 		          
 		             return "redirect:/index/"+owner_id+"?error=no_account_of_given_type_founds"; // Redirect back to the index
 		         }
