@@ -350,7 +350,6 @@ public class BankContoller {
 	     if (session != null && session.getAttribute("user_id") != null) {
 	    	 int owner_id = (int) session.getAttribute("user_id");
 	    	 transaction.setFromAccount(owner_id);
-	    	 transaction.setToAccount(0);
 	    	 transaction.setTransactionDate(LocalDateTime.now());
 	    	 int result = transaction_dao.saveTransaction(transaction);
 	    	 if(result == -1) {
@@ -372,7 +371,6 @@ public class BankContoller {
 	 }	 
 	 
 	 // -------> Transaction controller ends
-	 
 	 
 	 
 	 // -----------> Utility Section
@@ -408,9 +406,6 @@ public class BankContoller {
 	    	 
 	    	 // Redirect to the index page if the user is not logged in
 	         return "redirect:/?error=no_session";
-	     }
-		 	 
-	 }	 
-	 
-	 
+	     }	 
+	 }	  
 }
