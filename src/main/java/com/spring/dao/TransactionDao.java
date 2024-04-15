@@ -38,8 +38,10 @@ public class TransactionDao {
 	        String toAccountType = accountDao.mapAccTypeToString(transaction.getToAccountType());
 	        String fromAccountType = accountDao.mapAccTypeToString(transaction.getFromAccountType());
 	        boolean tochk = accountDao.checkAccountHasType(toOwnerId, toAccountType);
+	        
 	        boolean fromchk = accountDao.checkAccountHasType(fromOwnerId, fromAccountType);
-	        if (!tochk && !fromchk) {
+	        if (!tochk || !fromchk) {
+	        	System.out.println("herer");
 	        	return -1;
 	        }
 	        if(transactionType != "DEPOSIT" ) {
