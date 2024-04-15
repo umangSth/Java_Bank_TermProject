@@ -320,6 +320,8 @@ public class BankContoller {
 		    		 return "redirect:/index/"+owner_id+"?error=no_account_type_found";
 		    	 }else if(result == 0) {
 		    		 return "redirect:/index/"+owner_id+"?error=some_error_in_transaction";
+		    	 }else if(result == -2) {
+		    		 return "redirect:/index/"+owner_id+"?error=insufficent_funds";
 		    	 }
 		    	 
 		    	 return "redirect:/index/"+owner_id+"?error=transaction_done"; // Redirect to the home page after successful registration
